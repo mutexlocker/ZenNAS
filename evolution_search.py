@@ -46,8 +46,7 @@ def parse_cmd_options(argv):
     module_opt, _ = parser.parse_known_args(argv)
     return module_opt
 
-def get_new_random_structure_str(AnyPlainNet, structure_str, num_classes, get_search_space_func,
-                                 num_replaces=1):
+def get_new_random_structure_str(AnyPlainNet, structure_str, num_classes, get_search_space_func, num_replaces=1):
     the_net = AnyPlainNet(num_classes=num_classes, plainnet_struct=structure_str, no_create=True)
     assert isinstance(the_net, PlainNet.PlainNet)
     selected_random_id_set = set()
@@ -76,14 +75,17 @@ def get_new_random_structure_str(AnyPlainNet, structure_str, num_classes, get_se
 
     # adjust channels and remove empty layer
     tmp_new_block_list = [x for x in the_net.block_list if x is not None]
-    last_channels = the_net.block_list[0].out_channels
+    last_channels = tmp_new_block_list[0].out_channels
     for block in tmp_new_block_list[1:]:
         block.set_in_channels(last_channels)
         last_channels = block.out_channels
-    the_net.block_list = tmp_new_block_list
+
+    # Convert to nn.ModuleList
+    the_net.block_list = nn.ModuleList(tmp_new_block_list)
 
     new_random_structure_str = the_net.split(split_layer_threshold=6)
     return new_random_structure_str
+
 
 
 def get_splitted_structure_str(AnyPlainNet, structure_str, num_classes):
@@ -192,7 +194,7 @@ def main(args, argv):
             popu_latency_list.pop(tmp_idx)
         pass
 
-        if loop_count >= 1 and loop_count % 1000 == 0:
+        if loop_count >= 1 and loop_count % 100 == 0:
             max_score = max(popu_zero_shot_score_list)
             min_score = min(popu_zero_shot_score_list)
             elasp_time = time.time() - start_timer

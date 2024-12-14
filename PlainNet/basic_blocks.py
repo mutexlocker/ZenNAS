@@ -908,7 +908,7 @@ class ResBlock(PlainNetBasicBlockClass):
     '''
     def __init__(self, block_list, in_channels=None, stride=None, no_create=False, **kwargs):
         super(ResBlock, self).__init__(**kwargs)
-        self.block_list = block_list
+        self.block_list = nn.ModuleList(block_list)
         self.stride = stride
         self.no_create = no_create
         if not no_create:
@@ -1064,7 +1064,7 @@ class ResBlockProj(PlainNetBasicBlockClass):
     '''
     def __init__(self, block_list, in_channels=None, stride=None, no_create=False, **kwargs):
         super(ResBlockProj, self).__init__(**kwargs)
-        self.block_list = block_list
+        self.block_list = nn.ModuleList(block_list)
         self.stride = stride
         self.no_create = no_create
         if not no_create:

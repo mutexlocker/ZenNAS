@@ -24,7 +24,7 @@ class PlainNetSuperBlockClass(basic_blocks.PlainNetBasicBlockClass):
         self.stride = stride
         self.sub_layers = sub_layers
         self.no_create = no_create
-        self.block_list = None
+        self.block_list = nn.ModuleList()
         self.module_list = None
 
     def forward(self, x):
@@ -142,8 +142,9 @@ class SuperConvKXBNRELU(PlainNetSuperBlockClass):
             current_stride = 1
         pass
 
-        self.block_list = PlainNet.create_netblock_list_from_str(full_str, no_create=no_create,
-                                                                 no_reslink=no_reslink, no_BN=no_BN)
+        self.block_list = nn.ModuleList(PlainNet.create_netblock_list_from_str(full_str, no_create=no_create,
+                                                                            no_reslink=no_reslink, no_BN=no_BN))
+
         if not no_create:
             self.module_list = nn.ModuleList(self.block_list)
         else:

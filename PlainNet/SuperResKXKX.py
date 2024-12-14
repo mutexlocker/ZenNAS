@@ -62,7 +62,7 @@ class SuperResKXKX(PlainNetSuperBlockClass):
             current_stride = 1
         pass
 
-        self.block_list = PlainNet.create_netblock_list_from_str(full_str, no_create=no_create, no_reslink=no_reslink, no_BN=no_BN, **kwargs)
+        self.block_list = nn.ModuleList(PlainNet.create_netblock_list_from_str(full_str, no_create=no_create, no_reslink=no_reslink, no_BN=no_BN, **kwargs))
         if not no_create:
             self.module_list = nn.ModuleList(self.block_list)
         else:

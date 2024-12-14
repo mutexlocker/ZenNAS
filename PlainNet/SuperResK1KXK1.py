@@ -15,7 +15,7 @@ import global_utils
 
 
 class SuperResK1KXK1(PlainNetSuperBlockClass):
-    def __init__(self, in_channels=None, out_channels=None, stride=None, bottleneck_channels=None ,sub_layers=None, kernel_size=None,
+    def __init__(self, in_channels=None, out_channels=None, stride=None, bottleneck_channels=None, sub_layers=None, kernel_size=None,
                  no_create=False, no_reslink=False, no_BN=False, use_se=False, **kwargs):
         super(SuperResK1KXK1, self).__init__(**kwargs)
         self.in_channels = in_channels
@@ -28,6 +28,7 @@ class SuperResK1KXK1(PlainNetSuperBlockClass):
         self.no_reslink = no_reslink
         self.no_BN = no_BN
         self.use_se = use_se
+
         if self.use_se:
             print('---debug use_se in ' + str(self))
 
@@ -95,7 +96,11 @@ class SuperResK1KXK1(PlainNetSuperBlockClass):
             current_stride = 1
         pass
 
-        self.block_list = PlainNet.create_netblock_list_from_str(full_str, no_create=no_create, no_reslink=no_reslink, no_BN=no_BN, **kwargs)
+        # Update here: Use nn.ModuleList instead of a plain list
+        self.block_list = nn.ModuleList(
+            PlainNet.create_netblock_list_from_str(full_str, no_create=no_create, no_reslink=no_reslink, no_BN=no_BN, **kwargs)
+        )
+
         if not no_create:
             self.module_list = nn.ModuleList(self.block_list)
         else:

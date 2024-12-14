@@ -21,10 +21,10 @@ python evolution_search.py --gpu 0 \
   --search_space SearchSpace/search_space_XXBL.py \
   --budget_model_size ${budget_model_size} \
   --max_layers ${max_layers} \
-  --batch_size 64 \
+  --batch_size 128 \
   --input_image_size 32 \
   --plainnet_struct_txt ${save_dir}/init_plainnet.txt \
-  --num_classes 100 \
+  --num_classes 10 \
   --evolution_max_iter ${evolution_max_iter} \
   --population_size ${population_size} \
   --save_dir ${save_dir}
@@ -38,23 +38,23 @@ python analyze_model.py \
 
 python train_image_classification.py --dataset cifar10 --num_classes 10 \
   --dist_mode single --workers_per_gpu 6 \
-  --input_image_size 32 --epochs 1440 --warmup 5 \
+  --input_image_size 32 --epochs 2 --warmup 1 \
   --optimizer sgd --bn_momentum 0.01 --wd 5e-4 --nesterov --weight_init custom \
   --label_smoothing --random_erase --mixup --auto_augment \
   --lr_per_256 0.1 --target_lr_per_256 0.0 --lr_mode cosine \
   --arch Masternet.py:MasterNet \
   --plainnet_struct_txt ${save_dir}/best_structure.txt \
-  --batch_size_per_gpu 64 \
+  --batch_size_per_gpu 128 \
   --save_dir ${save_dir}/cifar10_1440epochs
 
 
-python train_image_classification.py --dataset cifar100 --num_classes 100 \
-  --dist_mode single --workers_per_gpu 6 \
-  --input_image_size 32 --epochs 1440 --warmup 5 \
-  --optimizer sgd --bn_momentum 0.01 --wd 5e-4 --nesterov --weight_init custom \
-  --label_smoothing --random_erase --mixup --auto_augment \
-  --lr_per_256 0.1 --target_lr_per_256 0.0 --lr_mode cosine \
-  --arch Masternet.py:MasterNet \
-  --plainnet_struct_txt ${save_dir}/best_structure.txt \
-  --batch_size_per_gpu 64 \
-  --save_dir ${save_dir}/cifar100_1440epochs
+# python train_image_classification.py --dataset cifar100 --num_classes 100 \
+#   --dist_mode single --workers_per_gpu 6 \
+#   --input_image_size 32 --epochs 1440 --warmup 5 \
+#   --optimizer sgd --bn_momentum 0.01 --wd 5e-4 --nesterov --weight_init custom \
+#   --label_smoothing --random_erase --mixup --auto_augment \
+#   --lr_per_256 0.1 --target_lr_per_256 0.0 --lr_mode cosine \
+#   --arch Masternet.py:MasterNet \
+#   --plainnet_struct_txt ${save_dir}/best_structure.txt \
+#   --batch_size_per_gpu 64 \
+#   --save_dir ${save_dir}/cifar100_1440epochs

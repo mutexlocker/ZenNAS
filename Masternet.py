@@ -52,6 +52,7 @@ class MasterNet(PlainNet.PlainNet):
 
         super().__init__(argv=argv, opt=opt, num_classes=num_classes, plainnet_struct=plainnet_struct,
                                        no_create=no_create, no_reslink=no_reslink, no_BN=no_BN, use_se=use_se)
+        self.block_list = nn.ModuleList(self.block_list)
         self.last_channels = self.block_list[-1].out_channels
         self.fc_linear = basic_blocks.Linear(in_channels=self.last_channels, out_channels=self.num_classes, no_create=no_create)
 

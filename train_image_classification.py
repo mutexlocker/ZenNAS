@@ -26,7 +26,7 @@ except ImportError:
 import ModelLoader, DataLoader
 import global_utils
 
-def save_checkpoint(checkpoint_filename, state_dict):
+def save_checkpoint(checkpoint_filename, state_dict,model=None):
     save_dir = os.path.dirname(checkpoint_filename)
     base_filename = os.path.basename(checkpoint_filename)
     backup_filename = os.path.join(save_dir, base_filename + '.backup')
@@ -39,6 +39,8 @@ def save_checkpoint(checkpoint_filename, state_dict):
         os.rename(checkpoint_filename, backup_filename)
 
     torch.save(state_dict, checkpoint_filename)
+    
+    # scripted_model.save("scripted_model.pt")
     if os.path.isfile(backup_filename):
         os.remove(backup_filename)
 
@@ -597,7 +599,7 @@ def validate(val_loader, model, criterion, opt, epoch='N/A'):
 
 
 def train_all_epochs(opt, model, optimizer, train_sampler, train_loader, criterion, val_loader, num_train_samples=None,
-                     no_acc_eval=False, save_all_ranks=False, training_status_info=None, save_params=True):
+                     no_acc_eval=False, save_all_ranks=True, training_status_info=None, save_params=True):
     timer_start = time.time()
 
     if training_status_info is None:
@@ -660,6 +662,9 @@ def train_all_epochs(opt, model, optimizer, train_sampler, train_loader, criteri
         if save_params and (opt.rank == 0 or save_all_ranks) and \
                 ((epoch + 1) % opt.save_freq == 0 or epoch + 1 == opt.epochs):
             checkpoint_filename = os.path.join(opt.save_dir, 'latest-params_rank{}.pth'.format(opt.rank))
+            checkpoint_filename_jit = os.path.join(opt.save_dir, 'latest-params_rank{}.pt'.format(opt.rank))
+            scripted_model = torch.jit.script(model)
+            scripted_model.save(checkpoint_filename_jit)
             save_checkpoint(checkpoint_filename, {
                 'epoch': epoch,
                 'state_dict': model.state_dict(),
@@ -672,6 +677,9 @@ def train_all_epochs(opt, model, optimizer, train_sampler, train_loader, criteri
         # ----- save best parameters -----#
         if save_params and is_best_acc1 and (opt.rank == 0 or save_all_ranks):
             checkpoint_filename = os.path.join(opt.save_dir, 'best-params_rank{}.pth'.format(opt.rank))
+            checkpoint_filename_jit = os.path.join(opt.save_dir, 'best-params_rank{}.pth'.format(opt.rank))
+            scripted_model = torch.jit.script(model)
+            scripted_model.save(checkpoint_filename_jit)
             save_checkpoint(checkpoint_filename, {
                 'epoch': epoch,
                 'state_dict': model.state_dict(),
@@ -778,7 +786,7 @@ def main(opt, argv):
     if not opt.evaluate_only:
         training_status_info = train_all_epochs(opt, model, optimizer, train_sampler, train_loader, criterion, val_loader,
                          num_train_samples=num_train_samples,
-                         no_acc_eval=False, save_all_ranks=False,
+                         no_acc_eval=False, save_all_ranks=True,
                          training_status_info=training_status_info)
     else:
         validate(val_loader, model, criterion, opt)
