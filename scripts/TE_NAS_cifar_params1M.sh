@@ -10,7 +10,7 @@ population_size=512
 evolution_max_iter=480000  # we suggest evolution_max_iter=480000 for
 
 
-save_dir=../save_dir/TE_NAS_cifar_params1M
+save_dir=save_dir/TE_NAS_cifar_params1M
 mkdir -p ${save_dir}
 
 echo "SuperConvK3BNRELU(3,8,1,1)SuperResK3K3(8,16,1,8,1)SuperResK3K3(16,32,2,16,1)SuperResK3K3(32,64,2,32,1)SuperResK3K3(64,64,2,32,1)SuperConvK1BNRELU(64,128,1,1)" \
@@ -32,7 +32,7 @@ python evolution_search.py --gpu 0 \
 
 python analyze_model.py \
   --input_image_size 32 \
-  --num_classes 100 \
+  --num_classes 10 \
   --arch Masternet.py:MasterNet \
   --plainnet_struct_txt ${save_dir}/best_structure.txt
 
